@@ -1,8 +1,11 @@
 <?php
 
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TodoController;
+use App\Models\Todo;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Application;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,7 +28,12 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('Dashboard', [
+        'todos' => Todo::where('user_id', '=', Auth::id())->get(),
+        'user_id' => Auth::id(),
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::post('/todos/create/{user_id}', [TodoController::class, 'create'])->middleware(['auth', 'verified']);
 
 require __DIR__.'/auth.php';
